@@ -1,0 +1,9 @@
+QUICK STEPS TO GET YOUR APK
+
+1. Upload the contents of this project to a new GitHub repository.
+2. Keep .github/workflows/build-apk.yml in the repository.
+3. Go to Actions > Build Sweet Box Run APK > Run workflow.
+4. Download Sweet-Box-Run-APK from the completed workflow's Artifacts.
+5. Extract app-debug.apk and open it on your Android phone to install.
+
+This workspace does not have Android SDK build tools and cannot directly emit the APK binary. See README.md for details.
