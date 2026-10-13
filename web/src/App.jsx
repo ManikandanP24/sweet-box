@@ -17,7 +17,7 @@ const spawn=g=>{const r=Math.random(),L=Math.floor(Math.random()*3),z=-90
  if(r<.4){const k=Math.random()<.12?'gold':'sweet';for(let i=0;i<6;i++)add(g,k,L,z-i*2)}
  else if(r<.55){add(g,'barrier',L,z);if(g.t>20)add(g,'barrier',(L+1)%3,z)}
  else if(r<.68)add(g,'banner',-1,z,0)
- else if(r<.8){add(g,'scooter',L,z);if(g.t>25)add(g,'scooter',(L+1)%3,z)}
+ else if(r<.8){if(g.t>6&&Math.random()<.45){add(g,'bus',L,z);return}add(g,'scooter',L,z);if(g.t>25)add(g,'scooter',(L+1)%3,z)}
  else if(r<.9){const ks=Object.keys(PW);add(g,'pw',L,z,undefined,ks[Math.floor(Math.random()*ks.length)])}
  else if(g.t>12&&g.t-g.tanker>15){g.tanker=g.t;const l=L%2;add(g,'tanker',l,z,(l-.5)*LX);say(g,'TANKER ALERT!');beep(150,.7,'sawtooth',.08)}
  else for(let i=0;i<5;i++)add(g,'sweet',L,z-i*2)}
@@ -35,14 +35,14 @@ function step(g,dt,hud){
  if(g.fs>.28&&g.y===0){g.fs=0;beep(90,.05,'triangle',.04)}
  if(g.sp>g.gap){g.sp=0;g.gap=11+Math.random()*8-Math.min(g.t*.05,4);spawn(g)}
  const dbl=g.pw.double>0?2:1
- for(let i=g.items.length-1;i>=0;i--){const it=g.items[i];it.z+=sp*dt
+ for(let i=g.items.length-1;i>=0;i--){const it=g.items[i];it.z+=(sp+(it.k==='bus'?8:0))*dt
   const sw=it.k==='sweet'||it.k==='gold',tk=it.k==='tanker'
-  const near=Math.abs(it.z)<(tk?3.2:.8),inLane=it.lane<0||it.lane===g.lane||(tk&&g.lane===it.lane+1)
+  const near=Math.abs(it.z)<(tk?3.2:it.k==='bus'?2.6:.8),inLane=it.lane<0||it.lane===g.lane||(tk&&g.lane===it.lane+1)
   let rm=it.z>7
   if(sw){it.o.rotation.y+=dt*3
    if((near&&inLane)||(g.pw.magnet>0&&it.z>-6&&it.z<1)){rm=true;g.sweets++;g.pts+=(it.k==='gold'?50:10)*dbl;beep(880+g.sweets%5*90,.08,'sine');if(g.sweets%10===0)say(g,'Sweet box secured!')}}
   else if(it.k==='pw'){if(near&&inLane){rm=true;g.pw[it.kind]=8;beep(1200,.2,'triangle');say(g,it.kind.toUpperCase()+'!')}}
-  else if(near&&inLane&&((it.k==='barrier'&&g.y<.7)||(it.k==='banner'&&g.slide<=0)||it.k==='scooter'||tk))hit(g)
+  else if(near&&inLane&&((it.k==='barrier'&&g.y<.7)||(it.k==='banner'&&g.slide<=0)||it.k==='scooter'||it.k==='bus'||tk))hit(g)
   if(rm){it.o.visible=false;g.items.splice(i,1)}else it.o.position.z=it.z}
  const score=g.pts+Math.floor(g.dist)
  if(g.lives<=0){g.run=false;const b=+localStorage.getItem(KEY)||0,nb=score>b;if(nb)localStorage.setItem(KEY,score);beep(200,.4,'sawtooth');setTimeout(()=>beep(120,.6,'sawtooth'),300);return hud({over:true,score,sweets:g.sweets,nb})}
@@ -56,6 +56,7 @@ const Slot=({i})=><group visible={false} ref={r=>{if(r)slots[i]=r}}>
  <group name="banner"><B a={[7,.7,.2]} p={[0,2.4,0]} c="#c0182b" e="#400"/><B a={[.2,2.4,.2]} p={[-3.4,1.2,0]} c="#555"/><B a={[.2,2.4,.2]} p={[3.4,1.2,0]} c="#555"/></group>
  <group name="scooter"><B a={[.7,.9,1.6]} p={[0,.55,0]} c="#16a34a"/><B a={[.6,.6,.5]} p={[0,1.2,-.3]} c="#ef4444"/></group>
  <group name="tanker"><B a={[3.8,2.2,6]} p={[0,1.5,-.6]} c="#e5e7eb"/><B a={[3.82,.5,6]} p={[0,1.2,-.6]} c="#2563eb"/><B a={[3.6,2,1.8]} p={[0,1.3,3.1]} c="#f3f4f6"/></group>
+ <group name="bus"><B a={[2,2.3,5]} p={[0,1.4,0]} c="#15803d"/><B a={[2.02,.5,5.02]} p={[0,1.5,0]} c="#fef3c7"/><B a={[1.8,.8,.05]} p={[0,1.8,2.52]} c="#7dd3fc" e="#bae6fd"/><B a={[1.6,.3,.05]} p={[0,2.4,2.52]} c="#facc15" e="#a16207"/></group>
  <group name="pw"><mesh position-y={1.1}><sphereGeometry args={[.45,16,16]}/><meshStandardMaterial emissiveIntensity={.8}/></mesh></group>
 </group>
 const COL=['#f59e0b','#ec4899','#14b8a6','#f97316','#a855f7','#ef4444']
@@ -104,7 +105,7 @@ export default function App(){
  return <div className="app">
   <Canvas camera={{fov:60,position:[0,3.4,6.5]}}><fog attach="fog" args={['#cfe8ff',30,100]}/><Sky sunPosition={[50,30,-100]}/><ambientLight intensity={.9}/><directionalLight position={[5,10,5]} intensity={1.2}/><Suspense fallback={null}><Scene g={g} hud={hud}/></Suspense></Canvas>
   {playing&&<><div className="hud"><button className="btn" onClick={pause}>{ph==='pause'?'▶':'⏸'}</button><span className="chip">🎁 {h.sweets||0}</span><span className="chip">📏 {h.dist||0} m</span><span className="chip">⚡ {h.speed||0} km/h</span><span className="chip">⭐ {h.score||0}</span><span className="chip">🏆 {best}</span><span className="chip">{'❤️'.repeat(Math.max(h.lives??3,0))}</span><button className="btn" onClick={()=>{muted=!muted;setMute(muted)}}>{mute?'🔇':'🔊'}</button>{Object.entries(h.pw||{}).map(([k,v])=><span key={k} className="chip" style={{background:PW[k]}}>{ICON[k]} {v}s</span>)}</div><div className="toast">{h.msg}</div></>}
-  {ph==='start'&&<div className="screen"><img className="app-logo" src={import.meta.env.BASE_URL+'app-logo.webp'} alt="Sweet Box Run logo"/><img className="face" src={import.meta.env.BASE_URL+'player-face.jpg'} alt="Runner"/><h1>SWEET BOX RUN</h1><div>Bro, return the sweets! Delivery boys are coming!</div><button className="btn big" onClick={start}>▶ PLAY</button><div>Best: {best} · Arrows/WASD/Space · swipe on mobile · P to pause</div></div>}
+  {ph==='start'&&<div className="screen"><img className="app-logo" src={import.meta.env.BASE_URL+'logo.webp'} alt="Sweet Box Run logo"/><img className="face" src={import.meta.env.BASE_URL+'player-face.jpg'} alt="Runner"/><h1>SWEET BOX RUN</h1><div>Bro, return the sweets! Delivery boys are coming!</div><button className="btn big" onClick={start}>▶ PLAY</button><div>Best: {best} · Arrows/WASD/Space · swipe on mobile · P to pause</div></div>}
   {ph==='pause'&&<div className="screen"><h1>PAUSED</h1><button className="btn big" onClick={pause}>Resume</button></div>}
   {ph==='over'&&<div className="screen"><h1>GAME OVER</h1><div style={{fontSize:28}}>{h.nb?'🎉 New best! You escaped with the sweets!':'Caught!'}</div><div style={{fontSize:24}}>Score {h.score} · 🎁 {h.sweets} · Best {best}</div><button className="btn big" onClick={start}>↻ RETRY</button></div>}
  </div>

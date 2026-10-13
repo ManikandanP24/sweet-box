@@ -19,6 +19,7 @@ jobs:
           mkdir -p web/public
           cp app/src/main/assets/player-face.jpg web/public/player-face.jpg
           cp app/src/main/assets/app-logo.webp web/public/app-logo.webp
+          cp web/public/logo.webp app/src/main/assets/logo.webp
       - name: Bundle React game for Android WebView
         working-directory: web
         run: |
