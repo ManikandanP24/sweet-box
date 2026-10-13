@@ -107,5 +107,5 @@ export default function App(){
   {ph==='start'&&<div className="screen"><img className="app-logo" src={import.meta.env.BASE_URL+'app-logo.webp'} alt="Sweet Box Run logo"/><img className="face" src={import.meta.env.BASE_URL+'player-face.jpg'} alt="Runner"/><h1>SWEET BOX RUN</h1><div>Bro, return the sweets! Delivery boys are coming!</div><button className="btn big" onClick={start}>▶ PLAY</button><div>Best: {best} · Arrows/WASD/Space · swipe on mobile · P to pause</div></div>}
   {ph==='pause'&&<div className="screen"><h1>PAUSED</h1><button className="btn big" onClick={pause}>Resume</button></div>}
   {ph==='over'&&<div className="screen"><h1>GAME OVER</h1><div style={{fontSize:28}}>{h.nb?'🎉 New best! You escaped with the sweets!':'Caught!'}</div><div style={{fontSize:24}}>Score {h.score} · 🎁 {h.sweets} · Best {best}</div><button className="btn big" onClick={start}>↻ RETRY</button></div>}
- </div>}
+ </div>
 }
