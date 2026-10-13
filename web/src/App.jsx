@@ -75,7 +75,7 @@ function Scene({g,hud}){
   <mesh rotation-x={-Math.PI/2} position={[0,0,-80]}><planeGeometry args={[7.4,220]}/><meshStandardMaterial color="#3a3a40"/></mesh>
   <mesh rotation-x={-Math.PI/2} position={[0,-.02,-80]}><planeGeometry args={[60,220]}/><meshStandardMaterial color="#c9a66b"/></mesh>
   <group ref={lines}>{[...Array(14)].map((_,i)=>[-1.1,1.1].map(x=><B key={i+'_'+x} a={[.12,.02,3]} p={[x,.02,-i*8]} c="#fff"/>))}</group>
-  <group ref={bl}>{[...Array(14)].map((_,i)=>[-1,1].map(sd=>{const h=6+((i*7+(sd>0?3:0))%5)*3;return <B key={i+'b'+sd} a={[5,h,10]} p={[sd*10,h/2,-i*14]} c={COL[(i+(sd>0?2:0))%6}/>}))}</group>
+  <group ref={bl}>{[...Array(14)].map((_,i)=>[-1,1].map(sd=>{const h=6+((i*7+(sd>0?3:0))%5)*3;return <B key={i+'b'+sd} a={[5,h,10]} p={[sd*10,h/2,-i*14]} c={COL[(i+(sd>0?2:0))%6]}/>}))}</group>
   <group ref={P}>
    <group ref={legs} position-y={.8}>{[-.17,.17].map(x=><group key={x} position-x={x}><B a={[.28,.8,.3]} p={[0,-.4,0]} c="#2b5aa8"/></group>)}</group>
    <B a={[.8,.8,.45]} p={[0,1.2,0]} c="#9fb4dc"/><B a={[.82,.08,.47]} p={[0,1.3,0]} c="#4b6cb7"/><B a={[.82,.08,.47]} p={[0,1.05,0]} c="#4b6cb7"/>
