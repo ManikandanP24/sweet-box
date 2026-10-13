@@ -9,6 +9,7 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
+// Sweet Box Run Android WebView shell
 public class MainActivity extends Activity {
   private WebView webView;
   @Override public void onCreate(Bundle state) {
